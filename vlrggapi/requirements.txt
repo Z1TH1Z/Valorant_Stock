@@ -1,0 +1,9 @@
+httpx==0.28.1
+cachetools==5.5.2
+uvicorn==0.39.0
+fastapi==0.128.5
+lxml==6.0.2
+slowapi==0.1.9
+selectolax==0.4.6
+pytest==8.4.2
+pytest-asyncio==1.2.0
