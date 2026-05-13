@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m uvicorn main:app --host 0.0.0.0 --port 8000)",
+      "Bash(echo \"vlrggapi PID: $!\")",
+      "Bash(curl -s http://127.0.0.1:8000/)",
+      "Bash(npx tsx:*)",
+      "Bash(timeout 15)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(curl -s \"http://localhost:3001/api/lpdb/results?limit=3\")",
+      "Bash(python -m json.tool)",
+      "Bash(.\\\\venv\\\\Scripts\\\\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000)",
+      "Bash(curl -s http://127.0.0.1:8000/health)",
+      "Bash(./venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 2876)",
+      "Bash(curl -s http://localhost:3001/api/lpdb/results?limit=3)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Apikey __CMDSUB_OUTPUT__')",
+      "Bash(xargs -r taskkill //F //PID)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(m['date'], m['team1'],'vs',m['team2'],'→',m['winner']\\) for m in d['matches'][:3]]\")",
+      "Bash(curl -s \"http://localhost:3001/api/lpdb/tournaments?limit=3\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(t['name'], '|', t['status']\\) for t in d['tournaments'][:3]]\")",
+      "Bash(curl -s \"http://localhost:3001/api/lpdb/team/Sentinels/history?limit=3\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(p['date'], p['tournament'], '→ place', p['placement']\\) for p in d['history'][:3]]\")",
+      "Bash(python -c \"import sys,json; t=sys.stdin.read\\(\\); idx=t.rfind\\('---'\\); print\\(t[idx:]\\); d=json.loads\\(t[:idx]\\); [print\\(m.get\\('date','?'\\), m.get\\('tournament','?'\\), 'tier:', m.get\\('liquipediatier','?'\\), 'finished:', m.get\\('finished','?'\\)\\) for m in d.get\\('result',[]\\)[:2]]\")",
+      "Bash(xargs -I{} taskkill //F //PID {})",
+      "Bash(curl -s \"http://localhost:3001/api/lpdb/results?limit=5\")",
+      "Bash(python -c ':*)",
+      "Bash(curl -s \"http://localhost:3001/api/chart/season\")",
+      "Bash(curl -s \"http://localhost:3001/api/chart/region/americas\")",
+      "Bash(curl -s \"http://localhost:3001/api/chart/region/emea\")"
+    ]
+  }
+}

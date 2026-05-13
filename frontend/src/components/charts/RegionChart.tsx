@@ -1,46 +1,63 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+    LineChart, Line, XAxis, YAxis, CartesianGrid,
+    Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 
-// Color palette for team lines
+const API_BASE = '';
+
 const TEAM_COLORS = [
-    '#FF4655', '#00FF9D', '#3b82f6', '#eab308', '#a855f7',
-    '#f97316', '#06b6d4', '#ec4899', '#84cc16', '#ef4444', '#14b8a6'
+    '#FF4655', '#00FF9D', '#3b82f6', '#eab308',
+    '#a855f7', '#f97316', '#06b6d4', '#ec4899',
+    '#84cc16', '#ef4444', '#14b8a6',
 ];
 
-interface TeamData {
-    name: string;
-    pts: number;
-    record?: string;
-}
-
 interface RegionChartProps {
-    teams: TeamData[];
     regionName: string;
+    region: string;   // slug: americas | emea | pacific | china
 }
 
-export function RegionChart({ teams, regionName }: RegionChartProps) {
-    if (!teams || teams.length === 0) return null;
+export function RegionChart({ regionName, region }: RegionChartProps) {
+    const [isMounted, setIsMounted] = useState(false);
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [teams, setTeams] = useState<string[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const topTeams = teams.slice(0, 6);
+    useEffect(() => {
+        setIsMounted(true);
+        fetch(`${API_BASE}/api/chart/region/${region}`)
+            .then(r => r.json())
+            .then(d => {
+                setChartData(d.chartData ?? []);
+                setTeams(d.teams ?? []);
+            })
+            .catch(() => { /* leave empty — fallback shown below */ })
+            .finally(() => setLoading(false));
+    }, [region]);
 
-    // Generate simulated performance data from team points (since we don't have historical data)
-    // Seed it from team names so it's deterministic
-    const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
-    const chartData = weeks.map((week, weekIdx) => {
-        const entry: any = { week };
-        topTeams.forEach((team) => {
-            const basePts = team.pts || 100;
-            // Create a progression trend using the team's name as a seed
-            const seed = team.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-            const variance = Math.sin(seed * (weekIdx + 1) * 0.3) * 15;
-            const progression = (weekIdx / 4) * basePts * 0.3;
-            entry[team.name] = Math.round(basePts * 0.7 + progression + variance);
-        });
-        return entry;
-    });
+    if (!isMounted || loading) {
+        return (
+            <div className="bg-primary border border-border rounded-lg p-6">
+                <h2 className="text-xl font-bold mb-4">{regionName} Team Performance</h2>
+                <div className="h-[300px] flex items-center justify-center">
+                    <div className="h-full w-full rounded-md bg-secondary/30 animate-pulse" />
+                </div>
+            </div>
+        );
+    }
+
+    if (chartData.length === 0) {
+        return (
+            <div className="bg-primary border border-border rounded-lg p-6">
+                <h2 className="text-xl font-bold mb-4">{regionName} Team Performance</h2>
+                <div className="h-[300px] flex items-center justify-center">
+                    <p className="text-muted text-sm">No season data available yet.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-primary border border-border rounded-lg p-6">
@@ -68,11 +85,11 @@ export function RegionChart({ teams, regionName }: RegionChartProps) {
                             itemStyle={{ color: '#ECE8E1' }}
                         />
                         <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                        {topTeams.map((team, i) => (
+                        {teams.map((team, i) => (
                             <Line
-                                key={team.name}
+                                key={team}
                                 type="monotone"
-                                dataKey={team.name}
+                                dataKey={team}
                                 stroke={TEAM_COLORS[i % TEAM_COLORS.length]}
                                 strokeWidth={2.5}
                                 dot={{ r: 3 }}

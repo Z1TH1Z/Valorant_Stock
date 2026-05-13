@@ -2,11 +2,35 @@
 Common HTML parsing utilities for VLR.GG scrapers
 """
 import re
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import urlparse
 
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+
+logger = logging.getLogger(__name__)
+_EASTERN_TZ = None
+
+
+def get_eastern_timezone():
+    """Return America/New_York if available, otherwise a fixed UTC-5 fallback."""
+    global _EASTERN_TZ
+    if _EASTERN_TZ is not None:
+        return _EASTERN_TZ
+
+    try:
+        _EASTERN_TZ = ZoneInfo("America/New_York")
+    except ZoneInfoNotFoundError:
+        # Some environments (especially minimal containers) do not have tzdata installed.
+        # Fallback keeps parsing functional so matches are not dropped.
+        logger.warning(
+            "ZoneInfo 'America/New_York' not available; falling back to fixed UTC-5 timezone."
+        )
+        _EASTERN_TZ = timezone(timedelta(hours=-5))
+
+    return _EASTERN_TZ
 
 
 def extract_text_content(element, strip: bool = True) -> str:
@@ -189,7 +213,7 @@ def combine_date_and_time(date_str: str, time_text: str) -> str:
     if not time_text or time_text.upper() in ("TBD", "LIVE", "-"):
         return ""
 
-    eastern = ZoneInfo("America/New_York")
+    eastern = get_eastern_timezone()
 
     # Clean up date_str: remove day-of-week prefix like "Mon, "
     cleaned_date = re.sub(r"^[A-Za-z]+,\s*", "", date_str.strip())

@@ -57,3 +57,12 @@ yarn-error.log*
 *.pem
 .vercel
 *.tsbuildinfo
+
+# Datasets & Models (stored centrally at ~/datasets and ~/models)
+datasets/
+models/
+data/raw/
+*.pkl
+*.joblib
+*.pt
+*.h5

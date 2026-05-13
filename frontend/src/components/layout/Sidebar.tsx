@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Globe, TrendingUp, Trophy } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { Home, Globe, TrendingUp, Trophy, LogIn, LogOut } from 'lucide-react';
 
 const navItems = [
     { href: '/', icon: Home, label: 'Dashboard' },
@@ -13,6 +14,7 @@ const navItems = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const { data: session } = useSession();
 
     return (
         <aside className="w-64 h-screen bg-primary border-r border-border flex flex-col">
@@ -34,8 +36,7 @@ export function Sidebar() {
                                 ${isActive
                                     ? 'bg-accent/10 text-white border-l-2 border-accent'
                                     : 'text-muted hover:text-white hover:bg-surface'
-                                }`
-                            }
+                                }`}
                         >
                             <Icon size={20} />
                             <span>{label}</span>
@@ -45,15 +46,34 @@ export function Sidebar() {
             </nav>
 
             <div className="p-6 border-t border-border">
-                <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-bold text-sm">
-                        NT
+                {session?.user ? (
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 min-w-0">
+                            <div className="w-10 h-10 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-bold text-sm flex-shrink-0">
+                                {(session.user.name ?? '?').slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                                <p className="font-semibold text-sm text-white truncate">{session.user.name}</p>
+                                <p className="text-xs text-muted truncate">{session.user.email}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => signOut()}
+                            title="Sign out"
+                            className="ml-2 text-muted hover:text-white transition-colors flex-shrink-0"
+                        >
+                            <LogOut size={16} />
+                        </button>
                     </div>
-                    <div>
-                        <p className="font-semibold text-sm text-white">Nithin</p>
-                        <p className="text-xs text-bull">Rank: Ascendant</p>
-                    </div>
-                </div>
+                ) : (
+                    <Link
+                        href="/auth/signin"
+                        className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-muted hover:text-white hover:bg-surface transition-all"
+                    >
+                        <LogIn size={20} />
+                        <span>Sign In</span>
+                    </Link>
+                )}
             </div>
         </aside>
     );

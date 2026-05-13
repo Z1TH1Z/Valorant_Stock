@@ -1,4 +1,5 @@
 import { Search, Bell } from 'lucide-react';
+import { RefreshButton } from './RefreshButton';
 
 export function Topbar() {
     return (
@@ -14,11 +15,9 @@ export function Topbar() {
             </div>
 
             <div className="flex items-center space-x-6">
-                <button className="relative text-muted hover:text-white transition-colors">
+                <RefreshButton />
+                <button className="relative text-muted hover:text-white transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/5">
                     <Bell size={22} />
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-accent flex items-center justify-center text-[10px] font-bold text-white">
-                        3
-                    </span>
                 </button>
             </div>
 
