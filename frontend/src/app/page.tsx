@@ -1,37 +1,73 @@
 import { StockChart } from '@/components/charts/StockChart';
 import { Clock, Zap, Newspaper, ExternalLink } from 'lucide-react';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:3000';
+import { VLR_BASE, isTier1Event } from '@/lib/tier1';
 
 async function getUpcomingMatches() {
   try {
-    const res = await fetch(`${API_BASE}/api/matches/upcoming`, { cache: 'no-store' });
-    const data = await res.json();
-    return data.matches || [];
+    const [homeData, extData] = await Promise.allSettled([
+      fetch(`${VLR_BASE}/match?q=upcoming`, { cache: 'no-store' }).then(r => r.json()),
+      fetch(`${VLR_BASE}/match?q=upcoming_extended&num_pages=2`, { cache: 'no-store' }).then(r => r.json()),
+    ]);
+    const home = homeData.status === 'fulfilled' ? homeData.value?.data?.segments ?? [] : [];
+    const ext  = extData.status  === 'fulfilled' ? extData.value?.data?.segments  ?? [] : [];
+    const seen = new Set<string>();
+    const all: any[] = [];
+    for (const seg of [...home, ...ext]) {
+      const page = seg.match_page ?? '';
+      if (!seen.has(page)) { seen.add(page); all.push(seg); }
+    }
+    return all
+      .filter((m: any) => isTier1Event(m.match_event ?? ''))
+      .slice(0, 30)
+      .map((m: any) => ({
+        id: m.match_page || Math.random().toString(),
+        teamA: m.team1, teamB: m.team2,
+        time: m.time_until_match || '',
+        event: m.match_event || '',
+      }));
   } catch { return []; }
 }
 
 async function getMatchResults() {
   try {
-    const res = await fetch(`${API_BASE}/api/matches/results`, { cache: 'no-store' });
-    const data = await res.json();
-    return data.results || [];
+    const data = await fetch(`${VLR_BASE}/match?q=results&num_pages=2`, { cache: 'no-store' }).then(r => r.json());
+    return (data?.data?.segments ?? [])
+      .filter((m: any) => isTier1Event(m.tournament_name ?? ''))
+      .slice(0, 8)
+      .map((m: any) => ({
+        id: m.match_page || Math.random().toString(),
+        teamA: m.team1, teamB: m.team2,
+        scoreA: m.score1 || '0', scoreB: m.score2 || '0',
+        event: m.tournament_name || '',
+        timeCompleted: m.time_completed || '',
+      }));
   } catch { return []; }
 }
 
 async function getLiveMatches() {
   try {
-    const res = await fetch(`${API_BASE}/api/matches/live`, { cache: 'no-store' });
-    const data = await res.json();
-    return data.matches || [];
+    const data = await fetch(`${VLR_BASE}/match?q=live_score`, { cache: 'no-store' }).then(r => r.json());
+    return (data?.data?.segments ?? [])
+      .filter((m: any) => isTier1Event(m.match_event ?? ''))
+      .map((m: any) => ({
+        id: m.match_page || Math.random().toString(),
+        teamA: m.team1, teamB: m.team2,
+        scoreA: m.score1 ?? '', scoreB: m.score2 ?? '',
+        event: m.match_event || '',
+      }));
   } catch { return []; }
 }
 
 async function getNews() {
   try {
-    const res = await fetch(`${API_BASE}/api/news`, { cache: 'no-store' });
-    const data = await res.json();
-    return data.articles || [];
+    const data = await fetch(`${VLR_BASE}/news`, { cache: 'no-store' }).then(r => r.json());
+    return (data?.data?.segments ?? []).slice(0, 5).map((a: any) => ({
+      title: a.title || '',
+      description: a.description || '',
+      date: a.date || '',
+      author: a.author || '',
+      url: a.url_path ? `https://www.vlr.gg${a.url_path}` : '',
+    }));
   } catch { return []; }
 }
 
