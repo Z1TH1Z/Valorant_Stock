@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const data = await fetch(`${VLR_BASE}/match?q=results&num_pages=2`).then(r => r.json());
     const results = (data?.data?.segments ?? [])
-      .filter((m: any) => isTier1Event(m.match_event ?? ''))
+      .filter((m: any) => isTier1Event(m.tournament_name ?? ''))
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),
@@ -15,7 +15,7 @@ export async function GET() {
         scoreB: m.score2 || '0',
         flagA: m.flag1 || '',
         flagB: m.flag2 || '',
-        event: m.match_event || '',
+        event: m.tournament_name || '',
         matchPage: m.match_page || '',
         timeCompleted: m.time_completed || '',
       }));
