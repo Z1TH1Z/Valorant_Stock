@@ -45,19 +45,16 @@ export function Sidebar() {
                 })}
             </nav>
 
-            <div className="px-6 py-3 border-t border-border">
-                <p className="text-[11px] text-muted leading-relaxed">Data from</p>
-                <div className="flex gap-3 mt-1">
-                    <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener noreferrer"
-                        className="text-[11px] text-accent hover:text-white transition-colors underline underline-offset-2">
-                        Liquipedia
-                    </a>
-                    <span className="text-[11px] text-muted">(CC-BY-SA)</span>
-                    <a href="https://vlr.gg" target="_blank" rel="noopener noreferrer"
-                        className="text-[11px] text-accent hover:text-white transition-colors underline underline-offset-2">
-                        VLR.gg
-                    </a>
-                </div>
+            <div className="px-6 py-3 border-t border-border space-y-1">
+                <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-between group">
+                    <span className="text-[11px] text-muted group-hover:text-white transition-colors">Liquipedia</span>
+                    <span className="text-[10px] text-muted/50">CC-BY-SA</span>
+                </a>
+                <a href="https://vlr.gg" target="_blank" rel="noopener noreferrer"
+                    className="flex items-center group">
+                    <span className="text-[11px] text-muted group-hover:text-white transition-colors">VLR.gg</span>
+                </a>
             </div>
 
             <div className="p-6 border-t border-border">
