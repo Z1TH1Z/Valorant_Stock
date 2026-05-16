@@ -3,14 +3,18 @@ export const VLR_BASE = process.env.VLRGG_API_URL ?? 'http://127.0.0.1:8000';
 interface VCTLeague { teams: string[]; }
 
 const VCT_LEAGUES: Record<string, VCTLeague> = {
-  americas: { teams: [] },
-  emea:     { teams: [] },
-  pacific:  { teams: [] },
-  china:    { teams: [] },
+  americas: { teams: ['Sentinels', 'NRG', 'Cloud9', 'LOUD', 'Leviatán', 'KRÜ Esports', '100 Thieves', 'Evil Geniuses', 'MIBR', '2Game Esports'] },
+  emea:     { teams: ['Fnatic', 'Team Liquid', 'NAVI', 'Giants', 'BBL Esports', 'Karmine Corp', 'Team Heretics', 'FUT Esports', 'GiantX', 'Mandragora'] },
+  pacific:  { teams: ['Paper Rex', 'ZETA DIVISION', 'DRX', 'T1', 'Gen.G', 'TALON', 'Rex Regum Qeon', 'BOOM Esports', 'Global Esports', 'Team Secret'] },
+  china:    { teams: ['EDward Gaming', 'FunPlus Phoenix', 'Bilibili Gaming', 'Wolves Esports', 'Titan Esports Club', 'Nova Esports', 'Dragon Ranger Gaming', 'All Gamers'] },
 };
 
-let ALL_TIER1_NAMES = new Set<string>();
-let tier1Loaded = false;
+const STATIC_TIER1: Set<string> = new Set(
+  Object.values(VCT_LEAGUES).flatMap(l => l.teams.map(t => t.toLowerCase()))
+);
+
+let ALL_TIER1_NAMES = new Set<string>(STATIC_TIER1);
+let tier1Loaded = true;
 let tier1Promise: Promise<void> | null = null;
 
 let rankingsCache = new Map<string, any>();
@@ -109,7 +113,7 @@ async function doLoadRankings() {
   );
   for (const result of results) {
     if (result.status !== 'fulfilled') continue;
-    for (const t of result.value?.data?.data ?? []) {
+    for (const t of result.value?.data ?? []) {
       const name: string = t.team?.trim();
       if (name && !rankingsCache.has(name.toLowerCase())) {
         rankingsCache.set(name.toLowerCase(), {
