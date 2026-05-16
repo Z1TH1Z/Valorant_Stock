@@ -19,7 +19,7 @@ export async function GET() {
     }
 
     const matches = all
-      .filter((m: any) => isTier1Event(m.tournament_name ?? ''))
+      .filter((m: any) => isTier1Event(m.match_event ?? ''))
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),
@@ -28,8 +28,8 @@ export async function GET() {
         flagA: m.flag1 || '',
         flagB: m.flag2 || '',
         time: m.time_until_match || '',
-        event: m.tournament_name || '',
-        series: m.round_info || '',
+        event: m.match_event || '',
+        series: m.match_series || '',
         matchPage: m.match_page || '',
         timestamp: m.unix_timestamp || '',
       }));
