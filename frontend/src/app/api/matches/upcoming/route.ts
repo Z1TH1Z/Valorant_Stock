@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { VLR_BASE, isTier1Team, ensureTier1Loaded } from '@/lib/tier1';
+import { VLR_BASE, isTier1Event } from '@/lib/tier1';
 
 export async function GET() {
   try {
-    await ensureTier1Loaded();
     const [homeData, extData] = await Promise.allSettled([
       fetch(`${VLR_BASE}/match?q=upcoming`).then(r => r.json()),
       fetch(`${VLR_BASE}/match?q=upcoming_extended&num_pages=2`).then(r => r.json()),
@@ -20,7 +19,7 @@ export async function GET() {
     }
 
     const matches = all
-      .filter((m: any) => isTier1Team(m.team1) || isTier1Team(m.team2))
+      .filter((m: any) => isTier1Event(m.match_event ?? ''))
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),
