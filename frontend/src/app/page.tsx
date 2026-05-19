@@ -25,18 +25,21 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const safe = (p: Promise<any>, fallback: any) =>
+      Promise.race([p, new Promise(res => setTimeout(() => res(fallback), 8000))]).catch(() => fallback);
+
     Promise.all([
-      fetch('/api/matches/upcoming').then(r => r.json()).catch(() => ({ matches: [] })),
-      fetch('/api/matches/results').then(r => r.json()).catch(() => ({ results: [] })),
-      ...REGIONS.map(r => fetch(`/api/rankings/${r.key}`).then(d => d.json()).catch(() => ({ teams: [] }))),
-    ]).then(([upData, resData, ...rankingData]) => {
+      safe(fetch('/api/matches/upcoming').then(r => r.json()), { matches: [] }),
+      safe(fetch('/api/matches/results').then(r => r.json()),  { results: [] }),
+      safe(fetch('/api/rankings/americas').then(r => r.json()), { teams: [] }),
+      safe(fetch('/api/rankings/emea').then(r => r.json()),     { teams: [] }),
+      safe(fetch('/api/rankings/pacific').then(r => r.json()),  { teams: [] }),
+      safe(fetch('/api/rankings/china').then(r => r.json()),    { teams: [] }),
+    ]).then(([upData, resData, am, emea, pac, cn]) => {
       setUpcoming(upData.matches || []);
       setResults(resData.results || []);
-      const teamsMap: Record<string, any[]> = {};
-      REGIONS.forEach((r, i) => { teamsMap[r.key] = rankingData[i]?.teams ?? []; });
-      setTeams(teamsMap);
-      setLoading(false);
-    });
+      setTeams({ americas: am.teams ?? [], emea: emea.teams ?? [], pacific: pac.teams ?? [], china: cn.teams ?? [] });
+    }).finally(() => setLoading(false));
   }, []);
 
   const regionInfo = REGIONS.find(r => r.key === selectedRegion)!;
