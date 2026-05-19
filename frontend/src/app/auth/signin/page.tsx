@@ -36,7 +36,7 @@ export default function SignInPage() {
         <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="w-full max-w-md">
                 <div className="bg-primary border border-border rounded-xl p-8">
-                    <h1 className="text-3xl font-tungsten text-accent uppercase tracking-widest mb-2">VCT Tracker</h1>
+                    <h1 className="text-3xl font-tungsten text-accent uppercase tracking-widest mb-2">VCTrade</h1>
                     <p className="text-muted text-sm mb-8">Sign in to track your predictions</p>
 
                     <form onSubmit={handleSubmit} className="space-y-5">

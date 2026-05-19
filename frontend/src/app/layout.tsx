@@ -17,8 +17,8 @@ const teko = Teko({
 });
 
 export const metadata: Metadata = {
-  title: 'VCT Performance Tracker',
-  description: 'Bloomberg Terminal for Valorant Esports',
+  title: 'VCTrade',
+  description: 'The Bloomberg Terminal for Valorant Esports',
 };
 
 export default function RootLayout({

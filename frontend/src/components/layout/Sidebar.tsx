@@ -19,7 +19,7 @@ export function Sidebar() {
         <aside className="w-64 h-screen bg-primary border-r border-border flex flex-col">
             <div className="p-6">
                 <h1 className="text-3xl font-tungsten text-accent tracking-widest uppercase">
-                    VCT Tracker
+                    VCTrade
                 </h1>
                 <div className="glow-line mt-3" />
             </div>
