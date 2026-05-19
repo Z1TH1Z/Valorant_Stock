@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { StockChart } from '@/components/charts/StockChart';
+import { RegionChart } from '@/components/charts/RegionChart';
 import { Clock } from 'lucide-react';
 
 const REGIONS = [
@@ -19,7 +19,6 @@ function isIntlEvent(event: string) {
 export default function Home() {
   const [selectedRegion, setSelectedRegion] = useState('americas');
   const [selectedEvent, setSelectedEvent] = useState<string>('');
-  const [teams, setTeams] = useState<Record<string, any[]>>({});
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,14 +30,9 @@ export default function Home() {
     Promise.all([
       safe(fetch('/api/matches/upcoming').then(r => r.json()), { matches: [] }),
       safe(fetch('/api/matches/results').then(r => r.json()),  { results: [] }),
-      safe(fetch('/api/rankings/americas').then(r => r.json()), { teams: [] }),
-      safe(fetch('/api/rankings/emea').then(r => r.json()),     { teams: [] }),
-      safe(fetch('/api/rankings/pacific').then(r => r.json()),  { teams: [] }),
-      safe(fetch('/api/rankings/china').then(r => r.json()),    { teams: [] }),
-    ]).then(([upData, resData, am, emea, pac, cn]) => {
+    ]).then(([upData, resData]) => {
       setUpcoming(upData.matches || []);
       setResults(resData.results || []);
-      setTeams({ americas: am.teams ?? [], emea: emea.teams ?? [], pacific: pac.teams ?? [], china: cn.teams ?? [] });
     }).finally(() => setLoading(false));
   }, []);
 
@@ -73,8 +67,6 @@ export default function Home() {
     [intlUpcoming, intlResults, selectedEvent]
   );
 
-  const regionTeams = teams[selectedRegion] ?? [];
-
   return (
     <div className="space-y-10">
       {/* Region Tabs */}
@@ -101,47 +93,9 @@ export default function Home() {
         <p className="text-muted text-sm mb-6">VCT franchise standings and upcoming matches.</p>
 
         <div className="grid grid-cols-3 gap-6">
-          {/* Team Standings */}
-          <div className="col-span-2 bg-primary border border-border rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-border">
-              <h2 className="font-bold text-white text-sm uppercase tracking-wider">Team Standings</h2>
-            </div>
-            {loading ? (
-              <div className="p-6 space-y-3">
-                {[1,2,3,4,5].map(i => <div key={i} className="h-10 bg-surface rounded animate-pulse" />)}
-              </div>
-            ) : regionTeams.length > 0 ? (
-              <table className="w-full">
-                <thead>
-                  <tr className="text-[11px] text-muted border-b border-border">
-                    <th className="text-left px-6 py-3 font-medium">#</th>
-                    <th className="text-left px-4 py-3 font-medium">Team</th>
-                    <th className="text-right px-4 py-3 font-medium">Points</th>
-                    <th className="text-right px-6 py-3 font-medium">Record</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {regionTeams.slice(0, 12).map((team: any, i: number) => (
-                    <tr key={team.id} className="border-b border-border/40 hover:bg-surface/50 transition-colors">
-                      <td className="px-6 py-3 text-muted text-sm w-12">{i + 1}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {team.logo
-                            ? <img src={team.logo} alt={team.name} className="w-5 h-5 object-contain" />
-                            : <div className="w-5 h-5 rounded bg-surface" />
-                          }
-                          <span className="font-bold text-white text-sm">{team.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right text-accent font-bold text-sm">{team.pts || '—'}</td>
-                      <td className="px-6 py-3 text-right text-muted text-sm">{team.record || '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="p-6 text-muted text-sm">No standings data available.</p>
-            )}
+          {/* Performance Chart */}
+          <div className="col-span-2">
+            <RegionChart regionName={regionInfo.label} region={selectedRegion} />
           </div>
 
           {/* Upcoming for this region */}
@@ -162,14 +116,6 @@ export default function Home() {
                 <p className="text-muted text-sm">No upcoming matches.</p>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Performance Chart */}
-        <div className="mt-6 bg-primary border border-border rounded-lg p-6 h-[360px] flex flex-col">
-          <h2 className="font-bold text-white text-sm uppercase tracking-wider mb-4">Top 5 Teams — Performance Index</h2>
-          <div className="flex-1 min-h-0">
-            <StockChart />
           </div>
         </div>
 
