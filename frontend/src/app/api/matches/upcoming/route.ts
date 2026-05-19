@@ -19,7 +19,12 @@ export async function GET() {
     }
 
     const matches = all
-      .filter((m: any) => isFranchiseTeam(m.team1 ?? '') || isFranchiseTeam(m.team2 ?? ''))
+      .filter((m: any) => {
+        const t1 = (m.team1 ?? '').trim().toLowerCase();
+        const t2 = (m.team2 ?? '').trim().toLowerCase();
+        if (!t1 || !t2 || t1 === 'tbd' || t2 === 'tbd') return false;
+        return isFranchiseTeam(t1) || isFranchiseTeam(t2);
+      })
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),
