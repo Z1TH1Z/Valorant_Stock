@@ -120,7 +120,12 @@ export default function PredictionsPage() {
     useEffect(() => {
         setPredictions(loadPredictions());
 
-        Promise.all([
+        // Auto-resolve predictions against LPDB results if logged in
+    if (session?.user) {
+      fetch(`${API_BASE}/api/predictions/resolve`, { method: 'POST' }).catch(() => {});
+    }
+
+    Promise.all([
             fetch(`${API_BASE}/api/matches/upcoming`)
                 .then(r => r.json())
                 .catch(() => ({ matches: [] })),
