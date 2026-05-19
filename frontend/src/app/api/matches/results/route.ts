@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { VLR_BASE, isTier1Event } from '@/lib/tier1';
+import { VLR_BASE, isFranchiseTeam } from '@/lib/tier1';
 
 export async function GET() {
   try {
     const data = await fetch(`${VLR_BASE}/match?q=results&num_pages=2`).then(r => r.json());
     const results = (data?.data?.segments ?? [])
-      .filter((m: any) => isTier1Event(m.tournament_name ?? ''))
+      .filter((m: any) => isFranchiseTeam(m.team1 ?? '') || isFranchiseTeam(m.team2 ?? ''))
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),

@@ -13,7 +13,8 @@ const REGIONS = [
 
 function isIntlEvent(event: string) {
   const e = event.toLowerCase();
-  return e.includes('masters') || e.includes('champions') || e.includes('ewc') || e.includes('esports world cup');
+  if (e.includes('qualifier') || e.includes('challengers') || e.includes('ascent')) return false;
+  return e.includes('masters') || e.includes('valorant champions') || e.includes('esports world cup');
 }
 
 export default function Home() {

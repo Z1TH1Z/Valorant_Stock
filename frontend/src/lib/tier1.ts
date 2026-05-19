@@ -9,6 +9,26 @@ const VCT_LEAGUES: Record<string, VCTLeague> = {
   china:    { teams: [] },
 };
 
+const FRANCHISE_TEAMS = new Set([
+  // Americas
+  'sentinels', 'nrg', 'cloud9', 'loud', 'leviatán', 'leviatan', 'krü esports', 'kru esports',
+  '100 thieves', 'evil geniuses', 'mibr', '2game esports',
+  // EMEA
+  'fnatic', 'team liquid', 'natus vincere', 'navi', 'giants', 'bbl esports',
+  'karmine corp', 'team heretics', 'fut esports', 'giantx', 'mandragora', 'team vitality', 'apeks',
+  // Pacific
+  'paper rex', 'zeta division', 'drx', 't1', 'gen.g', 'talon', 'rex regum qeon', 'rrq',
+  'boom esports', 'global esports', 'team secret', 'full sense', 'nongshim redforce',
+  // China
+  'edward gaming', 'funplus phoenix', 'bilibili gaming', 'wolves esports',
+  'titan esports club', 'nova esports', 'dragon ranger gaming', 'all gamers',
+  'xlg esports', 'trace esports',
+]);
+
+export function isFranchiseTeam(name: string): boolean {
+  return FRANCHISE_TEAMS.has(name.toLowerCase().trim());
+}
+
 export function isTier1Event(eventName: string): boolean {
   const e = eventName.toLowerCase();
   return e.includes('vct') || e.includes('valorant masters') || e.includes('valorant champions');

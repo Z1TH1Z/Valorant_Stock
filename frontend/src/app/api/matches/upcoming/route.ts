@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { VLR_BASE, isTier1Event } from '@/lib/tier1';
+import { VLR_BASE, isFranchiseTeam } from '@/lib/tier1';
 
 export async function GET() {
   try {
@@ -19,7 +19,7 @@ export async function GET() {
     }
 
     const matches = all
-      .filter((m: any) => isTier1Event(m.match_event ?? ''))
+      .filter((m: any) => isFranchiseTeam(m.team1 ?? '') || isFranchiseTeam(m.team2 ?? ''))
       .slice(0, 30)
       .map((m: any) => ({
         id: m.match_page || Math.random().toString(),
