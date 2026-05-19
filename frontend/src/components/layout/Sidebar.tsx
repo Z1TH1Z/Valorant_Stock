@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Home, Globe, TrendingUp, Trophy, LogIn, LogOut } from 'lucide-react';
+import { Home, TrendingUp, Trophy, LogIn, LogOut } from 'lucide-react';
 
 const navItems = [
     { href: '/', icon: Home, label: 'Dashboard' },
-    { href: '/regions', icon: Globe, label: 'Regions' },
     { href: '/predictions', icon: TrendingUp, label: 'Predictions' },
     { href: '/leaderboards', icon: Trophy, label: 'Leaderboards' },
 ];
