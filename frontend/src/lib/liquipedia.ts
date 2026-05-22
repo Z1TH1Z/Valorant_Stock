@@ -85,7 +85,7 @@ export interface LpdbMatch {
 
 export async function getLpdbResults(limit = 100): Promise<LpdbMatch[]> {
   const rows = await lpdbFetch('match', {
-    conditions: '[[finished::1]]',
+    conditions: '[[liquipediatier::1||2]] AND [[finished::1]]',
     fields: 'match2id,date,match2opponents,winner,tournament',
     limit: String(limit),
     order: 'date desc',
