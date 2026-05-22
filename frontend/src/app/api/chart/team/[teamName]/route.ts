@@ -2,8 +2,18 @@ import { NextResponse } from 'next/server';
 import { getLpdbResults } from '@/lib/liquipedia';
 import { buildTeamSeries, STOCK_START } from '@/lib/stockFormula';
 
+const LPDB_ALIASES: Record<string, string> = {
+  'navi': 'natus vincere',
+  'gen.g': 'gen.g esports',
+};
+
 function nameMatches(lpdbName: string, query: string): boolean {
-  return lpdbName.toLowerCase().trim() === query.toLowerCase().trim();
+  const a = lpdbName.toLowerCase().trim();
+  const b = query.toLowerCase().trim();
+  if (a === b) return true;
+  if (a.startsWith(b) || b.startsWith(a)) return true;
+  if (LPDB_ALIASES[b] === a || LPDB_ALIASES[a] === b) return true;
+  return false;
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ teamName: string }> }) {

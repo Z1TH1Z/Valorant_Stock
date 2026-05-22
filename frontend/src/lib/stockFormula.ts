@@ -121,7 +121,6 @@ export const FRANCHISE_TEAMS: { name: string; region: string }[] = [
   { name: 'Fnatic',         region: 'emea' },
   { name: 'Team Liquid',    region: 'emea' },
   { name: 'NAVI',           region: 'emea' },
-  { name: 'Giants',         region: 'emea' },
   { name: 'BBL Esports',    region: 'emea' },
   { name: 'Karmine Corp',   region: 'emea' },
   { name: 'Team Heretics',  region: 'emea' },
