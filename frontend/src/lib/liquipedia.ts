@@ -43,13 +43,17 @@ async function lpdbFetch(endpoint: string, params: Record<string, string>): Prom
 
   let res: Response;
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
     res = await fetch(url.toString(), {
+      signal: controller.signal,
       headers: {
         Authorization: `Apikey ${key}`,
         Accept: 'application/json',
         'User-Agent': 'VCT-Performance-Tracker/1.0 (github.com/Z1TH1Z/Valorant_Stock)',
       },
     });
+    clearTimeout(timer);
   } catch (err) {
     console.error('[LPDB] Network error:', err);
     return [];

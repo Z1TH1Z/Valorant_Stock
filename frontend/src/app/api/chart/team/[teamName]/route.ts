@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ teamNam
   const query = decodeURIComponent(teamName);
 
   try {
-    const allMatches = await getLpdbResults(500);
+    const allMatches = await getLpdbResults(200);
 
     // Find canonical name as it appears in LPDB
     const canonical = allMatches.find(m =>
