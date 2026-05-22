@@ -4,23 +4,23 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { RefreshButton } from './RefreshButton';
-import { FRANCHISE_TEAMS } from '@/lib/stockFormula';
-
-const REGION_COLORS: Record<string, string> = {
-  americas: 'text-blue-400',
-  emea:     'text-green-400',
-  pacific:  'text-yellow-400',
-  china:    'text-red-400',
-};
 
 export function Topbar() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
+  const [allTeams, setAllTeams] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    fetch('/api/teams/search')
+      .then(r => r.json())
+      .then(d => setAllTeams(d.teams ?? []))
+      .catch(() => {});
+  }, []);
+
   const filtered = query.trim().length > 0
-    ? FRANCHISE_TEAMS.filter(t => t.name.toLowerCase().includes(query.toLowerCase()))
+    ? allTeams.filter(t => t.toLowerCase().includes(query.toLowerCase()))
     : [];
 
   function navigate(name: string) {
@@ -30,7 +30,7 @@ export function Topbar() {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && filtered.length > 0) navigate(filtered[0].name);
+    if (e.key === 'Enter' && filtered.length > 0) navigate(filtered[0]);
     if (e.key === 'Escape') { setOpen(false); setQuery(''); }
   }
 
@@ -60,14 +60,11 @@ export function Topbar() {
           <div className="absolute top-full mt-1 left-0 right-0 bg-primary border border-border rounded-lg shadow-xl z-50 overflow-hidden">
             {filtered.slice(0, 8).map(team => (
               <button
-                key={team.name}
-                onClick={() => navigate(team.name)}
-                className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-surface transition-colors text-left"
+                key={team}
+                onClick={() => navigate(team)}
+                className="w-full flex items-center px-4 py-2.5 hover:bg-surface transition-colors text-left"
               >
-                <span className="text-white text-sm font-medium">{team.name}</span>
-                <span className={`text-[10px] uppercase tracking-wider font-bold ${REGION_COLORS[team.region]}`}>
-                  {team.region}
-                </span>
+                <span className="text-white text-sm font-medium">{team}</span>
               </button>
             ))}
           </div>
