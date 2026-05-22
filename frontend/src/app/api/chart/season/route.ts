@@ -4,9 +4,8 @@ import { buildStockSeries, STOCK_START } from '@/lib/stockFormula';
 
 export async function GET() {
   try {
-    const allMatches = await getLpdbResults(300);
-    const season = allMatches
-      .filter(m => m.date.startsWith('2026') && m.winner)
+    const allMatches = await getLpdbResults(500);
+    const season = allMatches.filter(m => m.winner)
       .sort((a, b) => a.date.localeCompare(b.date));
 
     if (season.length === 0) return NextResponse.json({ chartData: [], teams: [] });

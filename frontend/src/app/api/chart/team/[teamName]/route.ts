@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ teamNam
   const query = decodeURIComponent(teamName);
 
   try {
-    const allMatches = await getLpdbResults(200);
+    const allMatches = await getLpdbResults(500);
 
     // Find canonical name as it appears in LPDB
     const canonical = allMatches.find(m =>
@@ -33,7 +33,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ teamNam
 
     const teamMatches = allMatches
       .filter(m =>
-        m.date.startsWith('2026') && m.winner &&
+        m.winner &&
         (nameMatches(m.team1, name) || nameMatches(m.team2, name))
       )
       .sort((a, b) => a.date.localeCompare(b.date));

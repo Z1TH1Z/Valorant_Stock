@@ -15,9 +15,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ region:
   if (!keyword) return NextResponse.json({ chartData: [], teams: [] });
 
   try {
-    const allMatches = await getLpdbResults(300);
+    const allMatches = await getLpdbResults(500);
     const regional = allMatches
-      .filter(m => m.tournament?.includes(keyword) && m.date.startsWith('2026') && m.winner)
+      .filter(m => m.tournament?.includes(keyword) && m.winner)
       .sort((a, b) => a.date.localeCompare(b.date));
 
     if (regional.length === 0) return NextResponse.json({ chartData: [], teams: [] });
