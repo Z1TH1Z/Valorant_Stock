@@ -1,6 +1,14 @@
-import type { LpdbMatch } from './liquipedia';
-
 export const STOCK_START = 100;
+
+interface Match {
+  team1: string;
+  team2: string;
+  score1: number;
+  score2: number;
+  winner: string;
+  tournament: string;
+  date: string;
+}
 
 /**
  * VCTrade Stock Formula
@@ -39,7 +47,7 @@ export function calcDelta(
 }
 
 export function buildStockSeries(
-  matches: LpdbMatch[],
+  matches: Match[],
   teams: string[],
 ): { chartData: any[]; teams: string[] } {
   const scores: Record<string, number> = {};
@@ -71,7 +79,7 @@ export function buildStockSeries(
 }
 
 export function buildTeamSeries(
-  matches: LpdbMatch[],
+  matches: Match[],
   teamName: string,
 ): { chartData: { week: string; price: number }[]; current: number; start: number } {
   let price = STOCK_START;

@@ -4,20 +4,30 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { RefreshButton } from './RefreshButton';
+import { FRANCHISE_TEAMS } from '@/lib/stockFormula';
+
+const BASE_TEAMS = FRANCHISE_TEAMS.map(t => t.name);
 
 export function Topbar() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const [allTeams, setAllTeams] = useState<string[]>([]);
+  const [extraTeams, setExtraTeams] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/teams/search')
       .then(r => r.json())
-      .then(d => setAllTeams(d.teams ?? []))
+      .then(d => {
+        const extra = (d.teams ?? []).filter(
+          (t: string) => !BASE_TEAMS.some(b => b.toLowerCase() === t.toLowerCase())
+        );
+        setExtraTeams(extra);
+      })
       .catch(() => {});
   }, []);
+
+  const allTeams = [...BASE_TEAMS, ...extraTeams];
 
   const filtered = query.trim().length > 0
     ? allTeams.filter(t => t.toLowerCase().includes(query.toLowerCase()))
