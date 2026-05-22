@@ -1,19 +1,15 @@
 import { NextResponse } from 'next/server';
+import { getLpdbResults } from '@/lib/liquipedia';
 
 export async function GET() {
-  const base = process.env.VLRGG_API_URL ?? 'http://127.0.0.1:8000';
   try {
-    const [resultsRes, upcomingRes] = await Promise.all([
-      fetch(`${base}/match?q=results`, { cache: 'no-store' }).then(r => r.json()),
-      fetch(`${base}/match?q=upcoming`, { cache: 'no-store' }).then(r => r.json()),
-    ]);
+    const matches = await getLpdbResults(20);
     return NextResponse.json({
-      base,
-      results_first: resultsRes?.data?.segments?.[0] ?? null,
-      upcoming_first: upcomingRes?.data?.segments?.[0] ?? null,
-      upcoming_count: upcomingRes?.data?.segments?.length ?? 0,
+      count: matches.length,
+      first5: matches.slice(0, 5),
+      teams: [...new Set(matches.flatMap(m => [m.team1, m.team2]))].slice(0, 30),
     });
   } catch (e: any) {
-    return NextResponse.json({ base, error: e.message });
+    return NextResponse.json({ error: e.message });
   }
 }
