@@ -12,8 +12,22 @@ model User {
   username     String       @unique
   email        String       @unique
   passwordHash String
+  coins        Int          @default(1000)
   createdAt    DateTime     @default(now())
   predictions  Prediction[]
+  holdings     Holding[]
+}
+
+model Holding {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  teamName  String
+  shares    Float
+  buyPrice  Float
+  createdAt DateTime @default(now())
+
+  @@unique([userId, teamName])
 }
 
 model Prediction {
