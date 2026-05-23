@@ -118,14 +118,31 @@ export default function PredictionsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setPredictions(loadPredictions());
+        // Load predictions: DB if signed in, localStorage otherwise
+        if (session?.user) {
+            fetch(`${API_BASE}/api/predictions`)
+                .then(r => r.json())
+                .then(d => {
+                    const dbPreds: Prediction[] = (d.predictions ?? []).map((p: any) => ({
+                        matchId: p.matchId,
+                        teamA: p.teamA,
+                        teamB: p.teamB,
+                        event: p.event,
+                        selectedWinner: p.selectedWinner,
+                        selectedScore: p.selectedScore,
+                        timestamp: new Date(p.createdAt).getTime(),
+                    }));
+                    setPredictions(dbPreds);
+                    savePredictions(dbPreds);
+                })
+                .catch(() => setPredictions(loadPredictions()));
 
-        // Auto-resolve predictions against LPDB results if logged in
-    if (session?.user) {
-      fetch(`${API_BASE}/api/predictions/resolve`, { method: 'POST' }).catch(() => {});
-    }
+            fetch(`${API_BASE}/api/predictions/resolve`, { method: 'POST' }).catch(() => {});
+        } else {
+            setPredictions(loadPredictions());
+        }
 
-    Promise.all([
+        Promise.all([
             fetch(`${API_BASE}/api/matches/upcoming`)
                 .then(r => r.json())
                 .catch(() => ({ matches: [] })),
@@ -137,7 +154,7 @@ export default function PredictionsPage() {
             setLpdbResults(lpdbData.matches || []);
             setLoading(false);
         });
-    }, []);
+    }, [session]);
 
     const submitPrediction = (
         matchId: string, teamA: string, teamB: string,
